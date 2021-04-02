@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config()
 const port = process.env.PORT || 6066;
 
@@ -12,8 +13,6 @@ const app = express()
 
 app.use(bodyParser.json());
 app.use(cors());
-
-
 
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -36,6 +35,14 @@ client.connect(err => {
                 res.send(result.insertedCount > 0)
             })
     })
+
+    app.get('/products/:id', (req, res) => {
+        productCollection.find({_id: ObjectId(req.params.id)})
+        .toArray( (err, documents) => {
+            res.send(documents[0]);
+        })
+    })
+
 });
 
 app.get('/', (req, res) => {
